@@ -1,94 +1,46 @@
+const startupDebugger = require('debug')('app:startup');
+const dbDebugger = require('debug')('app:db');
+const config = require('config');
 const express = require('express');
-const Joi = require('joi');
+const logger = require('./middleware/Logger');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const genres = require('./routes/genres');   
+const home = require('./routes/home');
+
+// Create Express instance
 const app = express();
 
-app.use(express.json());
+// Middleware
+app.use(express.json()); // Parse JSON requests to be readable by server
+app.use(express.urlencoded({ extended: true })); // Enable encoding body requests in URL
+app.use(express.static('public')); // Serve static content
+app.use(helmet()); // Third-party app for header security
+app.use(logger); // Self-created middleware
+app.use('/api/genres', genres); // Use the main API routes
+app.use('/', home); // Use the homepage route
+
+// Set up Pug templating engine
+app.set('view engine', 'pug');
+app.set('views', './views'); // Default location to store views
+
+
+// Enable request logging if development environment
+if (app.get('env') === 'development'){
+    app.use(morgan('tiny')); // Third-party app for logging server request info
+    startupDebugger('Morgan enabled...')
+}
+
+// DB placeholder
+dbDebugger('Connected to DB...');
+
+// Test configuration settings
+// console.log(`Application name: ${config.get('name')}`);
+// console.log(`Mail server: ${config.get('mail.host')}`);
 
 // Set up port
 const port = process.env.PORT || 3000;
 
-// Define genres
-const genres = [
-    { id: 1, name: "action"},
-    { id: 2, name: "comedy"},
-    { id: 3, name: "drama"},
-    { id: 4, name: "horror"},
-    { id: 5, name: "romance"}
-];
-
-// GET all genres
-app.get('/genres', ( req, res ) => {
-
-    // Send all genres
-    res.send(genres);
-})
-
-// POST a new genre
-app.post('/genres', ( req, res ) => {
-
-    // Validate genre criteria
-    const { error } = joiValidate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
-    // Create new genre entry 
-    const genre = {
-        id: genres.length + 1,
-        name: req.body.name
-    }
-
-    // Add genre to array
-    genres.push(genre);
-
-    // Return posted genre
-    res.send(genre);
-    
-})
-
-// PUT to a genre
-app.put('/genres/:id', ( req, res ) => {
-
-    // Verify genre exists
-    const genre = genres.find(g => g.id === parseInt(req.params.id));
-    if (!genre) return res.status(404).send("Genre not found!");
-
-    // Validate genre criteria
-    const { error } = joiValidate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
-    // Update genre in array
-    genre.name = req.body.name;
-
-    // Return updated genre
-    res.send(genre);
-    
-})
-
-// DELETE a genre
-app.delete('/genres/:id', ( req, res ) => {
-
-    // Verify genre exists
-    const genre = genres.find(g => g.id === parseInt(req.params.id));
-    if (!genre) return res.status(404).send("Genre not found!");
-
-    // Remove genre from array
-    const genreIndex = genres.indexOf(genre);
-    genres.splice(genreIndex, 1);
-
-    // Return removed genre
-    res.send(genre);
-    
-})
-
-
 // Set up server to listen on port
 app.listen(port, () => console.log(`Listening on port ${port}...`))
-
-// Validation function with Joi NPM package
-function joiValidate(genre){
-    const schema = {
-        name: Joi.string().min(3).required()
-    };
-    return Joi.validate(genre, schema);
-}
-
 
