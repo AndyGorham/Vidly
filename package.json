@@ -1,0 +1,26 @@
+{
+  "name": "Vidly",
+  "version": "1.0.0",
+  "description": "Mosh Node.js course project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pingpong89/Vidly.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pingpong89/Vidly/issues"
+  },
+  "homepage": "https://github.com/pingpong89/Vidly#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "joi": "^13.1.0",
+    "jshint": "^2.11.0",
+    "nodemon": "^2.0.2"
+  }
+}
