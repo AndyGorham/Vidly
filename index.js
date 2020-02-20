@@ -5,11 +5,18 @@ const express = require('express');
 const logger = require('./middleware/Logger');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const genres = require('./routes/genres');   
+const genres = require('./routes/genres'); 
+const customers = require('./routes/customers');  
 const home = require('./routes/home');
+const mongoose = require('mongoose');
 
 // Create Express instance
 const app = express();
+
+// Connect to MongoDB 
+mongoose.connect('mongodb://localhost/genres')
+    .then(() => console.log('Connected to MongoDB...'))
+    .catch(err => console.error('Could not connect to MongoDB...'));
 
 // Middleware
 app.use(express.json()); // Parse JSON requests to be readable by server
@@ -17,8 +24,11 @@ app.use(express.urlencoded({ extended: true })); // Enable encoding body request
 app.use(express.static('public')); // Serve static content
 app.use(helmet()); // Third-party app for header security
 app.use(logger); // Self-created middleware
-app.use('/api/genres', genres); // Use the main API routes
-app.use('/', home); // Use the homepage route
+
+// Set up routes
+app.use('/api/genres', genres); // Genre routes
+app.use('/api/customers', customers); // Customer routes
+app.use('/', home); // Homepage route
 
 // Set up Pug templating engine
 app.set('view engine', 'pug');

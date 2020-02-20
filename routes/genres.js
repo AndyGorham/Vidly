@@ -1,38 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const Joi = require('joi');
-
-// Define genres
-const genres = [
-    { id: 1, name: "action"},
-    { id: 2, name: "comedy"},
-    { id: 3, name: "drama"},
-    { id: 4, name: "horror"},
-    { id: 5, name: "romance"}
-];
+const { Genre, joiValidate } = require('../models/genre');
 
 // GET all genres
-router.get('/', ( req, res ) => {
+router.get('/', async ( req, res ) => {
+
+    // Get genres from DB
+    const genres = await Genre.find().sort('name');
 
     // Send all genres
     res.send(genres);
 })
 
 // POST a new genre
-router.post('/', ( req, res ) => {
+router.post('/', async ( req, res ) => {
 
     // Validate genre criteria
     const { error } = joiValidate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     // Create new genre entry 
-    const genre = {
-        id: genres.length + 1,
-        name: req.body.name
-    }
+    let genre = new Genre({ name: req.body.name });
 
     // Add genre to array
-    genres.push(genre);
+    genre = await genre.save();
 
     // Return posted genre
     res.send(genre);
@@ -40,18 +31,17 @@ router.post('/', ( req, res ) => {
 })
 
 // PUT to a genre
-router.put('/:id', ( req, res ) => {
+router.put('/:id', async ( req, res ) => {
 
-    // Verify genre exists
-    const genre = genres.find(g => g.id === parseInt(req.params.id));
-    if (!genre) return res.status(404).send("Genre not found!");
-
-    // Validate genre criteria
+    // Validate genre criteria from API call
     const { error } = joiValidate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
+    
+    // Find and update genre if exists in DB
+    const genre = await Genre.findByIdAndUpdate(req.params.id, { name: req.body.name }, { name: true });
 
-    // Update genre in array
-    genre.name = req.body.name;
+    // Return error if genre doesn't exist in DB
+    if (!genre) return res.status(404).send("Genre not found!");
 
     // Return updated genre
     res.send(genre);
@@ -59,27 +49,31 @@ router.put('/:id', ( req, res ) => {
 })
 
 // DELETE a genre
-router.delete('/:id', ( req, res ) => {
+router.delete('/:id', async ( req, res ) => {
 
-    // Verify genre exists
-    const genre = genres.find(g => g.id === parseInt(req.params.id));
+    // Find and delete genre if exists in DB
+    const genre = await Genre.findByIdAndRemove(req.params.id);
+
+    // Return error if genre doesn't exist in DB
     if (!genre) return res.status(404).send("Genre not found!");
-
-    // Remove genre from array
-    const genreIndex = genres.indexOf(genre);
-    genres.splice(genreIndex, 1);
 
     // Return removed genre
     res.send(genre);
     
 })
 
-// Validation function with Joi NPM package
-function joiValidate(genre){
-    const schema = {
-        name: Joi.string().min(3).required()
-    };
-    return Joi.validate(genre, schema);
-}
+// GET a single genre
+router.get('/:id', async ( req, res) => {
+
+    // Find genre 
+    const genre = await Genre.findById(req.params.id);
+
+    // Return error if genre doesn't exist in DB
+    if (!genre) return res.status(404).send("Genre not found");
+
+    // Return genre
+    res.send(genre);
+
+})
 
 module.exports = router;
