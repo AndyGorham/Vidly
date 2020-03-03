@@ -24,6 +24,7 @@ function joiValidate(genre){
 
 exports.joiValidate = joiValidate;
 exports.Genre = Genre;
+exports.genreSchema = genreSchema;
 
 
 

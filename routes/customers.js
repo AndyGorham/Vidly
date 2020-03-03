@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Customer, joiValidate } = require('../models/customer');
+const auth = require('../middleware/auth');
 
 // GET all customers
 router.get('/', async ( req, res ) => {
@@ -35,7 +36,7 @@ router.post('/', async ( req, res ) => {
 })
 
 // PUT a customer
-router.put('/:id', async ( req, res ) => {
+router.put('/:id', auth, async ( req, res ) => {
 
     // Validate that customer meets criteria
     const { error } = joiValidate(req.body);
