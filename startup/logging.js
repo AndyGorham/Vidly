@@ -1,5 +1,5 @@
 const winston = require('winston'); // Error logging module
-require('winston-mongodb');
+// require('winston-mongodb'); // Doesn't work with Jest
 require('express-async-errors'); // Replace async error middleware (doesn't seem to work)
 
 module.exports = function(){
@@ -24,10 +24,10 @@ module.exports = function(){
 
     // Set up Winston to log to a file and then MongoDB
     winston.add(winston.transports.File, { filename: 'logfile.log'});
-    winston.add(winston.transports.MongoDB, { 
-        db: 'mongodb://localhost/vidly',
-        level: 'error' // only send error messages (not debug messages)
-    });
+    // winston.add(winston.transports.MongoDB, { 
+    //     db: 'mongodb://localhost/vidly',
+    //     level: 'error' // only send error messages (not debug messages)
+    // });
 
     // throw new Error('Test error!'); // Test error
     // const p = Promise.reject(new Error('Promise failed miserably...'))

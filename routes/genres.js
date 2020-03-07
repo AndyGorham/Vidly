@@ -3,11 +3,12 @@ const router = express.Router();
 const { Genre, joiValidate } = require('../models/genre');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const validateObjectId = require('../middleware/validateObjectId');
+
 
 // GET all genres
 router.get('/', async ( req, res ) => {
 
-    throw new Error('Could not get the genres');
     // Get genres from DB
     const genres = await Genre.find().sort('name');
 
@@ -67,7 +68,7 @@ router.delete('/:id', [auth,admin], async ( req, res ) => {
 });
 
 // GET a single genre
-router.get('/:id', async ( req, res) => {
+router.get('/:id', validateObjectId, async ( req, res) => {
 
     // Find genre 
     const genre = await Genre.findById(req.params.id);
