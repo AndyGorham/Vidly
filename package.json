@@ -4,7 +4,11 @@
   "description": "Mosh Node.js course project",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll --verbose --coverage"
+    "test": "jest --watchAll --verbose",
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "12.14.1"
   },
   "repository": {
     "type": "git",
@@ -19,6 +23,7 @@
   "homepage": "https://github.com/pingpong89/Vidly#readme",
   "dependencies": {
     "bcrypt": "^4.0.0",
+    "compression": "^1.7.4",
     "config": "^1.29.4",
     "express": "^4.17.1",
     "express-async-errors": "^2.1.2",

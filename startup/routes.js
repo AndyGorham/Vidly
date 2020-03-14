@@ -7,7 +7,9 @@ const movies = require('../routes/movies');
 const rentals = require('../routes/rentals');
 const users = require('../routes/users');
 const auth = require('../routes/auth');
+const returns = require('../routes/returns');
 const error = require('../middleware/error');
+
 
 // Misc. middleware imports
 const logger = require('../middleware/Logger'); // Sample logger middleware
@@ -29,6 +31,7 @@ module.exports = function(app){
     app.use('/api/rentals', rentals); // Rentals routes
     app.use('/api/users', users); // Users routes
     app.use('/api/auth', auth); // Authentication routes
+    app.use('/api/returns', returns); // Returns routes
     app.use(error);
     
 }

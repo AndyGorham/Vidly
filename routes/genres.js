@@ -5,7 +5,6 @@ const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const validateObjectId = require('../middleware/validateObjectId');
 
-
 // GET all genres
 router.get('/', async ( req, res ) => {
 
